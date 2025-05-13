@@ -1,6 +1,7 @@
 -- SERVICES
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local localPlayer = Players.LocalPlayer
 
 -- DESTROY OLD GUI
@@ -47,6 +48,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 mainFrame.BorderSizePixel = 4
 mainFrame.BorderColor3 = Color3.fromRGB(0, 255, 0)
 mainFrame.Visible = false
+mainFrame.Active = true
 mainFrame.Parent = screenGui
 
 local scaler = Instance.new("UIScale", mainFrame)
@@ -56,17 +58,17 @@ scaler.Scale = 1
 local scanline = Instance.new("ImageLabel")
 scanline.BackgroundTransparency = 1
 scanline.Size = UDim2.new(1, 0, 1, 0)
-scanline.Image = "rbxassetid://13822115542" -- public CRT scanline
+scanline.Image = "rbxassetid://13822115542" -- public scanlines
 scanline.ImageTransparency = 0.7
 scanline.ZIndex = 10
 scanline.TileSize = UDim2.new(1, 0, 1, 0)
 scanline.Parent = mainFrame
 
--- TWEENING SCANLINE ANIMATION LOOP
+-- TWEENING SCANLINE ANIMATION
 task.spawn(function()
 	while true do
 		scanline.Position = UDim2.new(0, 0, -1, 0)
-		TweenService:Create(scanline, TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {
+		TweenService:Create(scanline, TweenInfo.new(5, Enum.EasingStyle.Linear), {
 			Position = UDim2.new(0, 0, 1, 0)
 		}):Play()
 		task.wait(5)
@@ -163,8 +165,8 @@ task.spawn(function()
 	task.wait(1)
 	typeWrite("\nLOADING INTERFACE MODULES...", 0.05)
 	task.wait(1)
-	
-	-- Flicker & fade out
+
+	-- Flicker effect
 	for i = 1, 3 do
 		bootFrame.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
 		task.wait(0.05)
@@ -181,4 +183,33 @@ task.spawn(function()
 	-- Show main GUI
 	mainFrame.Visible = true
 	for _, b in ipairs(uiButtons) do b.Visible = true end
+end)
+
+-- CUSTOM DRAG SUPPORT
+local dragging, dragInput, dragStart, startPos
+
+mainFrame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - dragStart
+		mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
 end)
