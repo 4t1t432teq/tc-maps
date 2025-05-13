@@ -1,103 +1,97 @@
---[[ Retro Ultimate GUI | By ChatGPT ]]
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local TweenService = game:GetService("TweenService")
+-- NovaUI | Designed to outperform Rayfield | Client-side only
+local player = game:GetService("Players").LocalPlayer
+local tween = game:GetService("TweenService")
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "NovaUI"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
 
--- GUI Setup
-local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-screenGui.Name = "UltimateRetroGUI"
-screenGui.ResetOnSpawn = false
+-- UI Blur
+local blur = Instance.new("BlurEffect", game:GetService("Lighting"))
+blur.Size = 12
 
--- Boot-up Frame
-local bootFrame = Instance.new("Frame", screenGui)
-bootFrame.Size = UDim2.new(1,0,1,0)
-bootFrame.BackgroundColor3 = Color3.new(0,0,0)
+-- Main Container
+local container = Instance.new("Frame", gui)
+container.Size = UDim2.new(0, 480, 0, 500)
+container.Position = UDim2.new(0.5, -240, 0.5, -250)
+container.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+container.BorderSizePixel = 0
+container.AnchorPoint = Vector2.new(0.5, 0.5)
 
-local bootLabel = Instance.new("TextLabel", bootFrame)
-bootLabel.Size = UDim2.new(1,0,1,0)
-bootLabel.Text = ">> Initializing Ultimate GUI..."
-bootLabel.TextColor3 = Color3.new(0,1,0)
-bootLabel.BackgroundTransparency = 1
-bootLabel.TextScaled = true
-bootLabel.Font = Enum.Font.Code
+-- Drop Shadow
+local shadow = Instance.new("ImageLabel", container)
+shadow.Image = "rbxassetid://5028857084"
+shadow.ImageTransparency = 0.5
+shadow.ScaleType = Enum.ScaleType.Slice
+shadow.SliceCenter = Rect.new(24, 24, 276, 276)
+shadow.Size = UDim2.new(1, 40, 1, 40)
+shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+shadow.BackgroundTransparency = 1
+shadow.ZIndex = 0
 
--- Dramatic Boot-Up Effect
-task.spawn(function()
-	local messages = {
-		"> BIOS V1.98 Loading...",
-		"> Memory Check: OK",
-		"> Graphics Mode: Retro RGB",
-		"> Loading Payload...",
-		"> Ultimate GUI Ready. Press Any Button."
-	}
-	for _, msg in ipairs(messages) do
-		bootLabel.Text = msg
-		task.wait(1)
-	end
-	wait(0.5)
-	TweenService:Create(bootFrame, TweenInfo.new(1), {BackgroundTransparency = 1}):Play()
-	TweenService:Create(bootLabel, TweenInfo.new(1), {TextTransparency = 1}):Play()
-	wait(1)
-	bootFrame:Destroy()
-end)
+-- Title Bar
+local title = Instance.new("TextLabel", container)
+title.Size = UDim2.new(1, 0, 0, 50)
+title.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+title.BorderSizePixel = 0
+title.Text = "NovaUI - Executor Panel"
+title.TextColor3 = Color3.fromRGB(200, 200, 255)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
 
--- Main Frame
-local mainFrame = Instance.new("Frame", screenGui)
-mainFrame.Size = UDim2.new(0.3, 0, 0.6, 0)
-mainFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
-mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-mainFrame.BorderColor3 = Color3.new(0, 1, 0)
+-- Button Area
+local scroll = Instance.new("ScrollingFrame", container)
+scroll.Position = UDim2.new(0, 0, 0, 50)
+scroll.Size = UDim2.new(1, 0, 1, -50)
+scroll.CanvasSize = UDim2.new(0, 0, 2, 0)
+scroll.BackgroundTransparency = 1
+scroll.ScrollBarThickness = 6
 
--- Scanline Effect
-local scanlines = Instance.new("ImageLabel", mainFrame)
-scanlines.Size = UDim2.new(1, 0, 1, 0)
-scanlines.BackgroundTransparency = 1
-scanlines.Image = "http://www.roblox.com/asset/?id=5553946656"
-scanlines.ImageTransparency = 0.9
-scanlines.ZIndex = 2
+local layout = Instance.new("UIListLayout", scroll)
+layout.Padding = UDim.new(0, 8)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
 
--- UIListLayout for buttons
-local scrollingFrame = Instance.new("ScrollingFrame", mainFrame)
-scrollingFrame.Size = UDim2.new(1,0,1,0)
-scrollingFrame.CanvasSize = UDim2.new(0, 0, 2.5, 0)
-scrollingFrame.ScrollBarThickness = 4
-scrollingFrame.BackgroundTransparency = 1
+-- Button Creator
+local function createButton(label, url)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -20, 0, 44)
+	btn.Position = UDim2.new(0, 10, 0, 0)
+	btn.BackgroundColor3 = Color3.fromRGB(36, 36, 48)
+	btn.Text = "▶ " .. label
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.TextScaled = true
+	btn.Font = Enum.Font.Gotham
+	btn.BorderSizePixel = 0
+	btn.AutoButtonColor = false
+	btn.Parent = scroll
 
-local listLayout = Instance.new("UIListLayout", scrollingFrame)
-listLayout.Padding = UDim.new(0, 4)
+	-- Corner
+	local corner = Instance.new("UICorner", btn)
+	corner.CornerRadius = UDim.new(0, 8)
 
--- Button Creator Function
-local function createButton(text, loadstringURL)
-	local button = Instance.new("TextButton")
-	button.Size = UDim2.new(1, -10, 0, 40)
-	button.Position = UDim2.new(0,5,0,0)
-	button.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-	button.BorderColor3 = Color3.new(0, 1, 0)
-	button.TextColor3 = Color3.new(0,1,0)
-	button.Font = Enum.Font.Code
-	button.TextSize = 18
-	button.Text = "▶ " .. text
-	button.AutoButtonColor = false
-
-	-- Hover Animation
-	button.MouseEnter:Connect(function()
-		TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
+	-- Hover effect
+	btn.MouseEnter:Connect(function()
+		tween:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = Color3.fromRGB(46, 46, 64)
+		}):Play()
 	end)
-	button.MouseLeave:Connect(function()
-		TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(20, 20, 20)}):Play()
+	btn.MouseLeave:Connect(function()
+		tween:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = Color3.fromRGB(36, 36, 48)
+		}):Play()
 	end)
 
-	button.MouseButton1Click:Connect(function()
+	-- Function
+	btn.MouseButton1Click:Connect(function()
 		pcall(function()
-			loadstring(game:HttpGet(loadstringURL))()
+			loadstring(game:HttpGet(url))()
 		end)
 	end)
-
-	button.Parent = scrollingFrame
 end
 
--- Add Buttons with Popular Scripts (💡 Make sure these URLs are still active)
-local buttons = {
+-- Button List
+local scripts = {
 	{"Infinite Yield", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"},
 	{"CMD-X", "https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source"},
 	{"Simple Spy", "https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/master/SimpleSpy.lua"},
@@ -118,6 +112,7 @@ local buttons = {
 	{"Auto Clicker", "https://pastebin.com/raw/B6S8fcX8"},
 }
 
-for _, data in ipairs(buttons) do
-	createButton(data[1], data[2])
+-- Create Buttons
+for _, entry in pairs(scripts) do
+	createButton(entry[1], entry[2])
 end
