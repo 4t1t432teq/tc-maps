@@ -1,153 +1,123 @@
--- RETRO-STYLE GUI LOADER WITH 18 POPULAR LOADSTRING BUTTONS
--- FOR CLIENT-SIDE EXECUTION (E.G. EXECUTOR OR LOCALSCRIPT)
-
+--[[ Retro Ultimate GUI | By ChatGPT ]]
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
 
--- Remove old GUI
-local old = player:FindFirstChild("PlayerGui"):FindFirstChild("RetroCRTGui")
-if old then old:Destroy() end
+-- GUI Setup
+local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+screenGui.Name = "UltimateRetroGUI"
+screenGui.ResetOnSpawn = false
 
--- Create GUI
-local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-gui.Name = "RetroCRTGui"
-gui.IgnoreGuiInset = true
-gui.ResetOnSpawn = false
+-- Boot-up Frame
+local bootFrame = Instance.new("Frame", screenGui)
+bootFrame.Size = UDim2.new(1,0,1,0)
+bootFrame.BackgroundColor3 = Color3.new(0,0,0)
 
--- Boot Screen
-local boot = Instance.new("Frame", gui)
-boot.Size = UDim2.new(1, 0, 1, 0)
-boot.BackgroundColor3 = Color3.new(0, 0, 0)
+local bootLabel = Instance.new("TextLabel", bootFrame)
+bootLabel.Size = UDim2.new(1,0,1,0)
+bootLabel.Text = ">> Initializing Ultimate GUI..."
+bootLabel.TextColor3 = Color3.new(0,1,0)
+bootLabel.BackgroundTransparency = 1
+bootLabel.TextScaled = true
+bootLabel.Font = Enum.Font.Code
 
-local label = Instance.new("TextLabel", boot)
-label.Size = UDim2.new(1, 0, 1, 0)
-label.TextColor3 = Color3.fromRGB(0, 255, 0)
-label.Font = Enum.Font.Code
-label.TextSize = 24
-label.BackgroundTransparency = 1
-label.Text = ""
-
-local function typeText(text)
-    for i = 1, #text do
-        label.Text = string.sub(text, 1, i)
-        task.wait(0.05)
-    end
-end
-
-local function flicker()
-    for i = 1, 5 do
-        boot.BackgroundColor3 = Color3.new(0, 255, 0)
-        task.wait(0.05)
-        boot.BackgroundColor3 = Color3.new(0, 0, 0)
-        task.wait(0.05)
-    end
-end
-
--- Boot sequence
-typeText("INITIALIZING SYSTEM...\nLOADING BIOS...\nEXECUTING PAYLOAD...")
-flicker()
-TweenService:Create(label, TweenInfo.new(1), {TextTransparency = 1}):Play()
-TweenService:Create(boot, TweenInfo.new(1), {BackgroundTransparency = 1}):Play()
-task.wait(1)
-boot:Destroy()
+-- Dramatic Boot-Up Effect
+task.spawn(function()
+	local messages = {
+		"> BIOS V1.98 Loading...",
+		"> Memory Check: OK",
+		"> Graphics Mode: Retro RGB",
+		"> Loading Payload...",
+		"> Ultimate GUI Ready. Press Any Button."
+	}
+	for _, msg in ipairs(messages) do
+		bootLabel.Text = msg
+		task.wait(1)
+	end
+	wait(0.5)
+	TweenService:Create(bootFrame, TweenInfo.new(1), {BackgroundTransparency = 1}):Play()
+	TweenService:Create(bootLabel, TweenInfo.new(1), {TextTransparency = 1}):Play()
+	wait(1)
+	bootFrame:Destroy()
+end)
 
 -- Main Frame
-local frame = Instance.new("Frame", gui)
-frame.Position = UDim2.new(0.25, 0, 0.15, 0)
-frame.Size = UDim2.new(0.5, 0, 0.7, 0)
-frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-frame.BorderSizePixel = 4
-frame.BorderColor3 = Color3.fromRGB(0, 255, 0)
+local mainFrame = Instance.new("Frame", screenGui)
+mainFrame.Size = UDim2.new(0.3, 0, 0.6, 0)
+mainFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+mainFrame.BorderColor3 = Color3.new(0, 1, 0)
 
--- Title Bar
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0.1, 0)
-title.Text = "== RETRO SCRIPT HUB =="
-title.TextColor3 = Color3.fromRGB(0, 255, 0)
-title.Font = Enum.Font.Arcade
-title.TextScaled = true
-title.BackgroundTransparency = 1
+-- Scanline Effect
+local scanlines = Instance.new("ImageLabel", mainFrame)
+scanlines.Size = UDim2.new(1, 0, 1, 0)
+scanlines.BackgroundTransparency = 1
+scanlines.Image = "http://www.roblox.com/asset/?id=5553946656"
+scanlines.ImageTransparency = 0.9
+scanlines.ZIndex = 2
 
--- Scrolling Buttons
-local scroll = Instance.new("ScrollingFrame", frame)
-scroll.Size = UDim2.new(1, 0, 0.9, 0)
-scroll.Position = UDim2.new(0, 0, 0.1, 0)
-scroll.CanvasSize = UDim2.new(0, 0, 3, 0)
-scroll.ScrollBarThickness = 8
-scroll.BackgroundTransparency = 1
+-- UIListLayout for buttons
+local scrollingFrame = Instance.new("ScrollingFrame", mainFrame)
+scrollingFrame.Size = UDim2.new(1,0,1,0)
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 2.5, 0)
+scrollingFrame.ScrollBarThickness = 4
+scrollingFrame.BackgroundTransparency = 1
 
-local layout = Instance.new("UIGridLayout", scroll)
-layout.CellSize = UDim2.new(0.48, 0, 0.15, 0)
-layout.CellPadding = UDim2.new(0.02, 0, 0.02, 0)
+local listLayout = Instance.new("UIListLayout", scrollingFrame)
+listLayout.Padding = UDim.new(0, 4)
 
--- Scripts list
-local scripts = {
-    IY = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source",
-    DEX = "https://raw.githubusercontent.com/infy-sys/Dex/master/source.lua",
-    RSPY = "https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/master/SimpleSpy.lua",
-    CMDX = "https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source",
-    FATES = "https://raw.githubusercontent.com/fatesc/fates-admin/main/main.lua",
-    NAMELESS = "https://raw.githubusercontent.com/FilteringEnabled/NamelessAdmin/main/Source",
-    DARKDEX = "https://raw.githubusercontent.com/peyton2465/DarkDex/master/Loader.lua",
-    RSPY2 = "https://raw.githubusercontent.com/Upbolt/RemoteSpy/main/Main.lua",
-    HYDROX = "https://raw.githubusercontent.com/Hydroxide/hydroxide/master/init.lua",
-    OWL = "https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt",
-    VAPE = "https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/NewMainScript.lua",
-    PEVO = "https://raw.githubusercontent.com/Project-Evolution/PE-V2/main/PELoader.lua",
-    UFEHUB = "https://raw.githubusercontent.com/UniversalFEHub/UniversalFEHub/main/Loader.lua",
-    ECLIPSE = "https://raw.githubusercontent.com/EclipseHub/EclipseHub/main/Loader.lua",
-    TRIGON = "https://raw.githubusercontent.com/TrigonScripts/TrigonHub/main/Loader.lua",
-    FLUXUS = "https://fluxteam.net/scripts/fluxus.lua",
-    HOHOHUB = "https://hohohubv2.com/Script",
-    ZENTIHUB = "https://raw.githubusercontent.com/ZenithHub/Zenith/main/Loader.lua"
-}
+-- Button Creator Function
+local function createButton(text, loadstringURL)
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, -10, 0, 40)
+	button.Position = UDim2.new(0,5,0,0)
+	button.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	button.BorderColor3 = Color3.new(0, 1, 0)
+	button.TextColor3 = Color3.new(0,1,0)
+	button.Font = Enum.Font.Code
+	button.TextSize = 18
+	button.Text = "▶ " .. text
+	button.AutoButtonColor = false
 
--- Create buttons
-for name, url in pairs(scripts) do
-    local b = Instance.new("TextButton", scroll)
-    b.Text = name
-    b.Font = Enum.Font.Arcade
-    b.TextScaled = true
-    b.TextColor3 = Color3.fromRGB(0, 255, 0)
-    b.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    b.BorderColor3 = Color3.fromRGB(0, 255, 0)
-    b.BorderSizePixel = 2
-    b.MouseEnter:Connect(function() b.TextColor3 = Color3.fromRGB(255, 255, 255) end)
-    b.MouseLeave:Connect(function() b.TextColor3 = Color3.fromRGB(0, 255, 0) end)
-    b.MouseButton1Click:Connect(function()
-        local success, err = pcall(function()
-            loadstring(game:HttpGet(url))()
-        end)
-        if not success then
-            warn("Failed to load " .. name .. ": " .. tostring(err))
-        end
-    end)
+	-- Hover Animation
+	button.MouseEnter:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
+	end)
+	button.MouseLeave:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(20, 20, 20)}):Play()
+	end)
+
+	button.MouseButton1Click:Connect(function()
+		pcall(function()
+			loadstring(game:HttpGet(loadstringURL))()
+		end)
+	end)
+
+	button.Parent = scrollingFrame
 end
 
--- Make frame draggable
-frame.Active = true
-local dragging = false
-local dragStart, startPos
+-- Add Buttons with Popular Scripts (💡 Make sure these URLs are still active)
+local buttons = {
+	{"Infinite Yield", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"},
+	{"CMD-X", "https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source"},
+	{"Simple Spy", "https://raw.githubusercontent.com/exxtremestuffs/SimpleSpySource/master/SimpleSpy.lua"},
+	{"Dex Explorer", "https://raw.githubusercontent.com/peyton2465/Dex/master/out.lua"},
+	{"Dark Dex", "https://raw.githubusercontent.com/SpaceSpacening/Dark-Dex-V3/main/DarkDexV3"},
+	{"Reviz Admin", "https://pastebin.com/raw/Caniwq2N"},
+	{"Fates Admin", "https://raw.githubusercontent.com/fatesc/fates-admin/main/main.lua"},
+	{"Unnamed ESP", "https://raw.githubusercontent.com/ic3w0lf22/Unnamed-ESP/master/UnnamedESP.lua"},
+	{"Owl Hub", "https://pastebin.com/raw/Zxx2fbHp"},
+	{"Shattervast Admin", "https://pastebin.com/raw/7s63MMf3"},
+	{"Infinite Jump", "https://pastebin.com/raw/yNRv1Kjb"},
+	{"Anti-AFK", "https://pastebin.com/raw/6F8fNv6c"},
+	{"Backdoor Scanner", "https://pastebin.com/raw/pXmy3x6F"},
+	{"Remote Spy", "https://pastebin.com/raw/a1n3x6Y5"},
+	{"Fly GUI", "https://pastebin.com/raw/MHXXmLgd"},
+	{"FE God Mode", "https://pastebin.com/raw/v8vNVFz5"},
+	{"ESP Lines", "https://pastebin.com/raw/i7y2Bv1K"},
+	{"Auto Clicker", "https://pastebin.com/raw/B6S8fcX8"},
+}
 
-frame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = frame.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-frame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
-        local delta = input.Position - dragStart
-        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
-                                   startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
+for _, data in ipairs(buttons) do
+	createButton(data[1], data[2])
+end
